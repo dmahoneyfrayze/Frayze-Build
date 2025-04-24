@@ -11,10 +11,14 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+    esbuildOptions: {
+      target: 'es2020',
+    },
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
+    target: 'es2020',
     rollupOptions: {
       output: {
         manualChunks: {
