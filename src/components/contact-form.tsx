@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, Building2, Calendar, Clock, DollarSign, Check, Zap, Send } from "lucide-react";
+import { ArrowRight, Building2, Calendar, Clock, DollarSign, Check, Zap, Send, X } from "lucide-react";
 import { type Addon } from "@/types";
 import { formatCurrency } from "@/lib/format-utils";
 
@@ -13,14 +13,16 @@ interface ContactFormProps {
   selected: Addon[];
   onSubmit: (data: any) => void;
   onBack: () => void;
+  onClose?: () => void;
 }
 
-export function ContactForm({ totalPrice, selected, onSubmit, onBack }: ContactFormProps) {
+export function ContactForm({ totalPrice, selected, onSubmit, onBack, onClose }: ContactFormProps) {
   const [formData, setFormData] = useState({
     businessName: "",
     contactName: "",
     email: "",
     phone: "",
+    website: "",
     budget: "",
     timeline: "",
     bestTimeToContact: "",
@@ -29,19 +31,45 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack }: ContactF
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (showConfirmation) {
+      onSubmit(formData);
       setShowSuccess(true);
     } else {
       setShowConfirmation(true);
     }
   };
 
+  const handleContinue = () => {
+    onSubmit(formData);
+    setShowSuccess(false);
+    handleClose();
+  };
+
   if (showSuccess) {
     return (
       <Card className="max-w-2xl mx-auto">
-        <CardContent className="pt-12 pb-8">
+        <CardHeader>
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleClose}
+              className="h-8 w-8 hover:bg-primary/10"
+              aria-label="Close form"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6 pb-8">
           <div className="text-center space-y-6">
             <div className="w-16 h-16 bg-gradient-to-br from-[#0066FF] to-[#00F6A3] rounded-full mx-auto flex items-center justify-center">
               <Check className="w-8 h-8 text-white" />
@@ -67,14 +95,11 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack }: ContactF
               </Button>
               <Button
                 size="lg"
-                onClick={() => {
-                  onSubmit(formData);
-                  setShowSuccess(false);
-                }}
+                onClick={handleContinue}
                 className="bg-gradient-to-r from-[#0066FF] to-[#00F6A3] text-white hover:from-[#0052CC] hover:to-[#00E69D]"
               >
-                <Send className="w-4 h-4 mr-2" />
-                Submit Request
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Continue to Next Step
               </Button>
             </div>
           </div>
@@ -88,9 +113,20 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack }: ContactF
       <CardHeader>
         <div className="flex items-center justify-between mb-4">
           <CardTitle>Complete Your Custom Quote Request</CardTitle>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <Zap className="w-6 h-6 text-[#0066FF] mr-2" />
             <span className="text-xl font-bold text-[#1F2937]">FRAYZE</span>
+            {onClose && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-primary/10"
+                onClick={handleClose}
+                aria-label="Close form"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
         {showConfirmation && (
@@ -166,6 +202,16 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack }: ContactF
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="Your phone number"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Website</label>
+            <Input
+              type="url"
+              value={formData.website}
+              onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+              placeholder="https://your-website.com"
             />
           </div>
 

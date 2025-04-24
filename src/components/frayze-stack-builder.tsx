@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Check, ArrowLeft, Calendar, FileText, Sparkles } from "lucide-react";
+import { Check, ArrowLeft, Calendar, FileText, Sparkles, X } from "lucide-react";
 import { AddonGrid } from "@/components/addon-grid";
 import { AddonSummary } from "@/components/addon-summary";
 import { AddonSearch } from "@/components/addon-search";
@@ -14,9 +14,10 @@ import { ChatBot } from "@/components/chat-bot";
 import { Footer } from "@/components/footer";
 import { addonCategories, addons, getRecommendedAddons, coreSystems } from "@/data/addons";
 import { type Addon } from "@/types";
+import { sendSelections } from '../api/webhook';
 
 export default function FrayzeStackBuilder() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [selected, setSelected] = useState<Addon[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("ai-recommended");
@@ -30,6 +31,13 @@ export default function FrayzeStackBuilder() {
     mainGoal: string;
   } | null>(null);
   
+  const totalPrice = useMemo(() => selected.reduce((sum, addon) => {
+    if (addon?.pricing?.type === 'monthly' && addon.pricing.amount) {
+      return sum + addon.pricing.amount;
+    }
+    return sum;
+  }, 0), [selected]);
+  
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -42,15 +50,41 @@ export default function FrayzeStackBuilder() {
     }
   };
   
-  const handleContactSubmit = useCallback((formData: any) => {
-    // Here you would typically send this data to your backend
-    console.log('Quote Request:', {
-      selectedAddons: selected,
-      totalPrice,
-      ...formData
-    });
-    setCurrentStep(3); // Move to success step
-  }, [selected]);
+  const handleContactSubmit = useCallback(async (formData: any) => {
+    try {
+      await sendSelections({
+        selections: selected.map(addon => ({
+          id: addon.id,
+          name: addon.name,
+          description: addon.description,
+          category: addon.category,
+          subcategory: addon.subcategory,
+          pricing: addon.pricing,
+          includes: addon.includes
+        })),
+        metadata: {
+          totalPrice,
+          businessProfile,
+          contact: {
+            businessName: formData.businessName,
+            contactName: formData.contactName,
+            email: formData.email,
+            phone: formData.phone,
+            website: formData.website,
+            bestTimeToContact: formData.bestTimeToContact
+          },
+          preferences: {
+            budget: formData.budget,
+            timeline: formData.timeline,
+            additionalInfo: formData.additionalInfo
+          }
+        }
+      });
+      setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.error('Failed to submit selections:', error);
+    }
+  }, [selected, businessProfile, currentStep, totalPrice]);
   
   const handleProfileSubmit = (profile: typeof businessProfile) => {
     setBusinessProfile(profile);
@@ -139,13 +173,6 @@ export default function FrayzeStackBuilder() {
 
     return false;
   });
-
-  const totalPrice = selected.reduce((sum, addon) => {
-    if (addon?.pricing?.type === 'monthly' && addon.pricing.amount) {
-      return sum + addon.pricing.amount;
-    }
-    return sum;
-  }, 0);
   
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-b from-background to-background/90">
@@ -254,7 +281,23 @@ export default function FrayzeStackBuilder() {
             exit={{ opacity: 0 }}
             className="container px-4 py-12 mx-auto max-w-7xl"
           >
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl mx-auto relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 hover:bg-primary/10"
+                onClick={() => {
+                  setCurrentStep(1);
+                  setSelected([]);
+                  setBusinessProfile(null);
+                  setActiveCategory("ai-recommended");
+                  setActiveSubcategory("");
+                }}
+                aria-label="Close acknowledgement"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+
               <div className="inline-flex items-center justify-center p-3 rounded-full bg-gradient-to-br from-[#0066FF] to-[#00F6A3] text-white mb-4 mx-auto">
                 <Check className="w-6 h-6" />
               </div>
@@ -334,6 +377,7 @@ export default function FrayzeStackBuilder() {
               totalPrice={totalPrice} 
               onSubmit={handleContactSubmit}
               onBack={handleBack}
+              onClose={() => setShowContactForm(false)}
             />
           </div>
         </div>
