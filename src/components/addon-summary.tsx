@@ -110,7 +110,7 @@ export function AddonSummary({ selected, totalPrice, toggleAddon, onNext }: Addo
         </div>
         
         <Button 
-          className="w-full mt-3 group bg-gradient-to-r from-[#0066FF] to-[#00F6A3] hover:from-[#0052CC] hover:to-[#00E69D] transition-all duration-300" 
+          className="w-full mt-3 group bg-gradient-to-r from-[#0066FF] to-[#00F6A3] hover:from-[#0052CC] hover:to-[#00E69D] transition-all duration-300"
           disabled={selected.length === 0}
           size="lg"
           variant="default"
