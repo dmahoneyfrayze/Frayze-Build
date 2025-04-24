@@ -9,16 +9,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-    esbuildOptions: {
-      target: 'es2020',
-    },
-  },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    target: 'es2020',
+    sourcemap: true
   },
   server: {
     proxy: {
