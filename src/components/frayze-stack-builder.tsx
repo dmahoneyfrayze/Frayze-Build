@@ -30,6 +30,7 @@ export default function FrayzeStackBuilder() {
     teamSize: string;
     mainGoal: string;
   } | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   
   const totalPrice = useMemo(() => selected.reduce((sum, addon) => {
     if (addon?.pricing?.type === 'monthly' && addon.pricing.amount) {
@@ -80,7 +81,8 @@ export default function FrayzeStackBuilder() {
           }
         }
       });
-      setCurrentStep(currentStep + 1);
+      setCurrentStep(3);
+      setShowConfirmation(true);
     } catch (error) {
       console.error('Failed to submit selections:', error);
     }
@@ -273,96 +275,99 @@ export default function FrayzeStackBuilder() {
           </motion.div>
         )}
 
-        {currentStep === 3 && (
+        {currentStep === 3 && showConfirmation && (
           <motion.div
             key="step3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="container px-4 py-12 mx-auto max-w-7xl"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto py-8"
           >
-            <div className="max-w-2xl mx-auto relative">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 hover:bg-primary/10"
-                onClick={() => {
-                  setCurrentStep(1);
-                  setSelected([]);
-                  setBusinessProfile(null);
-                  setActiveCategory("ai-recommended");
-                  setActiveSubcategory("");
-                }}
-                aria-label="Close acknowledgement"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-
-              <div className="inline-flex items-center justify-center p-3 rounded-full bg-gradient-to-br from-[#0066FF] to-[#00F6A3] text-white mb-4 mx-auto">
-                <Check className="w-6 h-6" />
-              </div>
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold mb-2">Thanks! Your Quote Request is Confirmed</h2>
-                <p className="text-muted-foreground">
-                  A Frayze strategist will review your stack and follow up within 24 hours.
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div className="container px-4 py-12 mx-auto max-w-7xl">
+              <div className="max-w-2xl mx-auto relative bg-background rounded-lg p-6">
                 <Button
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-[#0066FF] to-[#00F6A3] hover:from-[#0052CC] hover:to-[#00E69D] text-white"
-                  onClick={() => window.open('https://calendly.com/frayze/demo', '_blank')}
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Book a Call Now
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full"
-                  onClick={() => {
-                    // Generate and download PDF logic would go here
-                    console.log('Downloading estimate...');
-                  }}
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Download Estimate PDF
-                </Button>
-              </div>
-              
-              <Card className="bg-muted/30 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-medium">What happens next?</h3>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-primary" />
-                        A Frayze strategist will review your requirements
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-primary" />
-                        We'll prepare a detailed proposal with exact pricing
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-primary" />
-                        Schedule a call to discuss implementation details
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </Card>
-              
-              <div className="mt-6 text-center">
-                <Button 
                   variant="ghost"
-                  onClick={() => setCurrentStep(1)}
+                  size="icon"
+                  className="absolute right-4 top-4 hover:bg-primary/10"
+                  onClick={() => {
+                    setShowConfirmation(false);
+                    setCurrentStep(1);
+                    setSelected([]);
+                    setBusinessProfile(null);
+                    setActiveCategory("ai-recommended");
+                    setActiveSubcategory("");
+                  }}
+                  aria-label="Close acknowledgement"
                 >
-                  Start Another Quote
+                  <X className="h-4 w-4" />
                 </Button>
+
+                <div className="inline-flex items-center justify-center p-3 rounded-full bg-gradient-to-br from-[#0066FF] to-[#00F6A3] text-white mb-4 mx-auto">
+                  <Check className="w-6 h-6" />
+                </div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold mb-2">Thanks! Your Quote Request is Confirmed</h2>
+                  <p className="text-muted-foreground">
+                    A Frayze strategist will review your stack and follow up within 24 hours.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                  <Button
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-[#0066FF] to-[#00F6A3] hover:from-[#0052CC] hover:to-[#00E69D] text-white"
+                    onClick={() => window.open('https://calendly.com/frayze/demo', '_blank')}
+                  >
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Book a Call Now
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full"
+                    onClick={() => {
+                      // Generate and download PDF logic would go here
+                      console.log('Downloading estimate...');
+                    }}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Download Estimate PDF
+                  </Button>
+                </div>
+                
+                <Card className="bg-muted/30 p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-medium">What happens next?</h3>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-primary" />
+                          A Frayze strategist will review your requirements
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-primary" />
+                          We'll prepare a detailed proposal with exact pricing
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-primary" />
+                          Schedule a call to discuss implementation details
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+                
+                <div className="mt-6 text-center">
+                  <Button 
+                    variant="ghost"
+                    onClick={() => setCurrentStep(1)}
+                  >
+                    Start Another Quote
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.div>
