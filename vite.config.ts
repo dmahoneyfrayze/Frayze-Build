@@ -19,13 +19,14 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     target: 'es2020',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-        },
-      },
-    },
   },
-  base: '/',
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://n8n.frayze.ca',
+        changeOrigin: true,
+        secure: true,
+      }
+    }
+  }
 });
