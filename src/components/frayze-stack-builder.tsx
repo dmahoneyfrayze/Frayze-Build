@@ -29,7 +29,7 @@ export default function FrayzeStackBuilder() {
     businessType: string;
     teamSize: string;
     mainGoal: string;
-  } | null>(null);
+  } | undefined>(undefined);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
   const totalPrice = useMemo(() => selected.reduce((sum, addon) => {
@@ -44,7 +44,7 @@ export default function FrayzeStackBuilder() {
       setCurrentStep(currentStep - 1);
       if (currentStep === 2) {
         setSelected([]);
-        setBusinessProfile(null);
+        setBusinessProfile(undefined);
         setActiveCategory("ai-recommended");
         setActiveSubcategory("");
       }
@@ -301,7 +301,7 @@ export default function FrayzeStackBuilder() {
                     setShowConfirmation(false);
                     setCurrentStep(1);
                     setSelected([]);
-                    setBusinessProfile(null);
+                    setBusinessProfile(undefined);
                     setActiveCategory("ai-recommended");
                     setActiveSubcategory("");
                   }}
