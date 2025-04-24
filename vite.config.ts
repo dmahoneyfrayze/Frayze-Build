@@ -8,9 +8,11 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    preserveSymlinks: true,
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+    include: ['react', 'react-dom'],
   },
   build: {
     outDir: 'dist',
@@ -19,8 +21,12 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
+          'radix-ui': ['@radix-ui/react-*'],
         },
       },
+    },
+    commonjsOptions: {
+      include: [/node_modules/],
     },
   },
   base: '/',
