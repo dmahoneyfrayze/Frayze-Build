@@ -110,11 +110,21 @@ export function AddonSummary({ selected, totalPrice, toggleAddon, onNext }: Addo
         </div>
         
         <Button 
-          className="w-full mt-3 group bg-gradient-to-r from-[#0066FF] to-[#00F6A3] hover:from-[#0052CC] hover:to-[#00E69D] transition-all duration-300"
+          className="w-full mt-3 group"
           disabled={selected.length === 0}
           size="lg"
           variant="default"
           onClick={onNext}
+          style={{
+            background: 'linear-gradient(to right, #0066FF, #00F6A3)',
+            transition: 'all 0.3s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(to right, #0052CC, #00E69D)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(to right, #0066FF, #00F6A3)';
+          }}
         >
           <span>Request Full Quote</span>
           <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
