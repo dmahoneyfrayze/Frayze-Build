@@ -9,14 +9,19 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
     preserveSymlinks: true,
+    dedupe: ['react', 'react-dom'],
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
     include: ['react', 'react-dom'],
+    esbuildOptions: {
+      target: 'es2020',
+    },
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
+    target: 'es2020',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -27,6 +32,7 @@ export default defineConfig({
     },
     commonjsOptions: {
       include: [/node_modules/],
+      transformMixedEsModules: true,
     },
   },
   base: '/',
