@@ -164,7 +164,7 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack, onClose }:
 
         <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium flex items-center">
               <Building2 className="w-4 h-4 mr-2 text-muted-foreground" />
               Business Name
@@ -173,6 +173,7 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack, onClose }:
               value={formData.businessName}
               onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
               placeholder="Your business name"
+              required
             />
           </div>
           
@@ -182,6 +183,7 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack, onClose }:
               value={formData.contactName}
               onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
               placeholder="Your full name"
+              required
             />
           </div>
 
@@ -192,6 +194,7 @@ export function ContactForm({ totalPrice, selected, onSubmit, onBack, onClose }:
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="your@email.com"
+              required
             />
           </div>
 
