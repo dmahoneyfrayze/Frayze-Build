@@ -1,49 +1,32 @@
-import type { APIRoute } from "astro";
-import axios from 'axios';
+import { Request, Response } from 'express';
 
-const N8N_WEBHOOK_URL = 'https://n8n.frayze.ca/webhook-test/d685ac24-5d07-43af-8311-bac8fbfe651d';
+export default async function handler(req: Request, res: Response) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-export const post: APIRoute = async ({ request }) => {
   try {
-    const data = await request.json();
-    
-    const response = await axios.post(N8N_WEBHOOK_URL, data, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      timeout: 10000
-    });
+    const data = req.body;
+    console.log('Received webhook data:', data);
 
-    return new Response(JSON.stringify(response.data), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    // Process the webhook data
+    const workflow_data = {
+      selections: data,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Send success response
+    return res.status(200).json({
+      success: true,
+      message: 'Webhook received successfully',
+      data: workflow_data,
     });
   } catch (error) {
-    console.error('Webhook error:', error);
-    
-    if (axios.isAxiosError(error)) {
-      return new Response(JSON.stringify({
-        error: 'Webhook request failed',
-        details: error.response?.data || error.message
-      }), {
-        status: error.response?.status || 500,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-    }
-
-    return new Response(JSON.stringify({
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    console.error('Error processing webhook:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error processing webhook',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
-}; 
+} 
