@@ -1,11 +1,17 @@
 import axios from 'axios';
+import { SelectionData } from '../types';
 
-interface SelectionData {
-  selections: any[];
-  metadata?: Record<string, any>;
+interface WebhookResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    selections: any;
+    timestamp: string;
+  };
+  error?: string;
 }
 
-export const sendSelections = async (data: SelectionData) => {
+export const sendSelections = async (data: SelectionData): Promise<WebhookResponse> => {
   try {
     const payload = {
       selections: data.selections,
@@ -19,7 +25,7 @@ export const sendSelections = async (data: SelectionData) => {
       }
     };
 
-    const response = await axios.post('https://n8n.frayze.ca/webhook/d685ac24-5d07-43af-8311-bac8fbfe651d', payload, {
+    const response = await axios.post('/api/webhook', payload, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
