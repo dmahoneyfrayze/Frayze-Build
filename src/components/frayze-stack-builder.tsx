@@ -53,6 +53,7 @@ export default function FrayzeStackBuilder() {
   
   const handleContactSubmit = useCallback(async (formData: any) => {
     try {
+      // Send the webhook
       await sendSelections({
         selections: selected.map(addon => ({
           id: addon.id,
@@ -81,12 +82,19 @@ export default function FrayzeStackBuilder() {
           }
         }
       });
+
+      // Close the contact form first
+      setShowContactForm(false);
+      
+      // Then show the confirmation
       setCurrentStep(3);
       setShowConfirmation(true);
     } catch (error) {
       console.error('Failed to submit selections:', error);
+      // Show error state in the form instead of closing it
+      alert('Failed to submit your request. Please try again.');
     }
-  }, [selected, businessProfile, currentStep, totalPrice]);
+  }, [selected, businessProfile, totalPrice]);
   
   const handleProfileSubmit = (profile: typeof businessProfile) => {
     setBusinessProfile(profile);
